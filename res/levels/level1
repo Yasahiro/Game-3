@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" width="25" height="19" tilewidth="32" tileheight="32">
+<map version="1.0" orientation="orthogonal" width="25" height="19" tilewidth="32" tileheight="32" backgroundcolor="#64afe1">
  <tileset firstgid="1" name="tilea4" tilewidth="32" tileheight="32">
-  <image source="../tilesets/tilea4.png" width="512" height="480"/>
+  <image source="../../../Locked/content/tilesets/tilea4.png" width="512" height="480"/>
  </tileset>
  <tileset firstgid="241" name="tilea7" tilewidth="32" tileheight="32">
-  <image source="../tilesets/tilea7.png" width="512" height="480"/>
+  <image source="../../../Locked/content/tilesets/tilea7.png" width="512" height="480"/>
  </tileset>
  <tileset firstgid="481" name="tileb" tilewidth="32" tileheight="32">
-  <image source="../tilesets/tileb.png" width="512" height="512"/>
+  <image source="../../../Locked/content/tilesets/tileb.png" width="512" height="512"/>
  </tileset>
  <layer name="map" width="25" height="19">
   <data>
@@ -297,9 +297,9 @@
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
-   <tile gid="413"/>
-   <tile gid="413"/>
-   <tile gid="413"/>
+   <tile gid="293"/>
+   <tile gid="293"/>
+   <tile gid="293"/>
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
@@ -322,11 +322,9 @@
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
-   <tile gid="413"/>
+   <tile gid="309"/>
    <tile gid="0"/>
-   <tile gid="413"/>
-   <tile gid="0"/>
-   <tile gid="0"/>
+   <tile gid="309"/>
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
@@ -347,13 +345,11 @@
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
-   <tile gid="413"/>
-   <tile gid="0"/>
-   <tile gid="413"/>
    <tile gid="0"/>
    <tile gid="0"/>
+   <tile gid="309"/>
    <tile gid="0"/>
-   <tile gid="0"/>
+   <tile gid="309"/>
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
@@ -361,31 +357,35 @@
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
-   <tile gid="413"/>
-   <tile gid="413"/>
-   <tile gid="413"/>
-   <tile gid="413"/>
-   <tile gid="413"/>
-   <tile gid="413"/>
-   <tile gid="0"/>
-   <tile gid="0"/>
-   <tile gid="413"/>
-   <tile gid="413"/>
-   <tile gid="413"/>
-   <tile gid="413"/>
-   <tile gid="413"/>
-   <tile gid="413"/>
-   <tile gid="413"/>
-   <tile gid="413"/>
-   <tile gid="413"/>
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
-   <tile gid="413"/>
-   <tile gid="413"/>
-   <tile gid="413"/>
-   <tile gid="413"/>
+   <tile gid="309"/>
+   <tile gid="309"/>
+   <tile gid="309"/>
+   <tile gid="309"/>
+   <tile gid="309"/>
+   <tile gid="309"/>
+   <tile gid="0"/>
+   <tile gid="0"/>
+   <tile gid="309"/>
+   <tile gid="309"/>
+   <tile gid="309"/>
+   <tile gid="309"/>
+   <tile gid="309"/>
+   <tile gid="309"/>
+   <tile gid="309"/>
+   <tile gid="309"/>
+   <tile gid="309"/>
+   <tile gid="0"/>
+   <tile gid="0"/>
+   <tile gid="0"/>
+   <tile gid="0"/>
+   <tile gid="309"/>
+   <tile gid="309"/>
+   <tile gid="309"/>
+   <tile gid="309"/>
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
