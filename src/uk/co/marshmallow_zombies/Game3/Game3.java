@@ -1,23 +1,27 @@
 package uk.co.marshmallow_zombies.Game3;
 
-import java.awt.Color;
-import java.awt.Font;
+import java.awt.AlphaComposite;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.IOException;
-
-import javax.imageio.ImageIO;
 
 import uk.co.marshmallow_zombies.rj2dgl.framework.Game;
-import uk.co.marshmallow_zombies.rj2dgl.tilesets.Layer;
-import uk.co.marshmallow_zombies.rj2dgl.tilesets.Map;
-import uk.co.marshmallow_zombies.rj2dgl.tilesets.Tile;
-import uk.co.marshmallow_zombies.rj2dgl.tilesets.TileLayer;
+import uk.co.marshmallow_zombies.rj2dgl.framework.Keyboard;
+import uk.co.marshmallow_zombies.rj2dgl.framework.Keys;
+import uk.co.marshmallow_zombies.tmxloader.Layer;
+import uk.co.marshmallow_zombies.tmxloader.Map;
+import uk.co.marshmallow_zombies.tmxloader.MapObject;
+import uk.co.marshmallow_zombies.tmxloader.ObjectGroup;
+import uk.co.marshmallow_zombies.tmxloader.Tile;
+import uk.co.marshmallow_zombies.tmxloader.TileLayer;
 
 public class Game3 extends Game {
 
 	private Map map;
+	// private int offset;
+	private Player player;
 
 	public Game3() {
 
@@ -25,12 +29,11 @@ public class Game3 extends Game {
 
 	@Override
 	protected void init() {
-		map = Map.load("res/levels/level1");
-
-		window.setTitle(String.format("%d x %d", map.getWidth(), map.getHeight()));
+		map = Map.load(new File("res/levels/level1"));
+		player = new Player(map);
 
 		super.init();
-		screen.setSize(map.getWidth() * map.getTileWidth(), map.getHeight() * map.getTileHeight());
+		screen.setSize(25 * map.getTileWidth(), 15 * map.getTileHeight());
 	}
 
 	@Override
@@ -41,11 +44,17 @@ public class Game3 extends Game {
 	@Override
 	protected void stop() {
 		super.stop();
+		
+		System.exit(0);
 	}
 
 	@Override
 	protected void tick(long delta) {
-		// TODO update logic
+		player.pollInput();
+		player.pollPosition();
+
+		if (Keyboard.isKeyDown(Keys.ESCAPE))
+			exit();
 
 		super.tick(delta);
 	}
@@ -54,16 +63,23 @@ public class Game3 extends Game {
 	protected void render(Graphics g, long delta) {
 		screen.clear(map.getBackgroundColor());
 
-		drawMap(g);
+		drawMap(g, 0, 0);
+
+		player.draw(g);
 
 		super.render(g, delta);
 	}
 
-	private void drawMap(Graphics g) {
+	private void drawMap(Graphics g, int offsetX, int offsetY) {
+		Graphics2D g2d = (Graphics2D) g;
+
 		Layer[] layers = map.getLayers();
 
 		for (int j = 0; j < layers.length; j++) {
 			Layer layer = layers[j];
+
+			g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, layer.getOpacity()));
+			g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
 			if (layer instanceof TileLayer) {
 				Tile[] tiles = ((TileLayer) layer).getTiles();
@@ -73,23 +89,28 @@ public class Game3 extends Game {
 					if (tiles[i].equals(Tile.EMPTY))
 						continue;
 
-					int x = i % map.getWidth() * map.getTileWidth();
-					int y = i / map.getWidth() * map.getTileHeight();
+					int x = i % map.getWidth() * map.getTileWidth() + offsetX;
+					int y = i / map.getWidth() * map.getTileHeight() + offsetY;
 					BufferedImage image = tiles[i].getImage();
-					File file = new File("/home/oliver/Pictures/test/l" + j + "_t" + i);
-					try {
-						if (!file.exists())
-							ImageIO.write(image, "png", file);
-					} catch (IOException e) {
-					}
 
-					g.drawImage(image, x, y, null);
-
-					g.setFont(new Font("Arial", Font.PLAIN, 10));
-					g.setColor(Color.BLUE);
-					g.drawString(String.format("%d", j + 1), x, y + 16);
+					g2d.drawImage(image, x, y, null);
 				}
-				System.out.printf("Layer %d\n", j + 1);
+			} else if (layer instanceof ObjectGroup) {
+				MapObject[] objects = ((ObjectGroup) layer).getObjects();
+				int w = objects.length;
+
+				for (int i = 0; i < w; i++) {
+					MapObject object = objects[i];
+
+					if (object.hasGID()) {
+						int x = object.getX();
+						int y = object.getY() - map.getTileHeight();
+
+						BufferedImage image = object.getImage();
+
+						g2d.drawImage(image, x, y, null);
+					}
+				}
 			}
 		}
 	}
