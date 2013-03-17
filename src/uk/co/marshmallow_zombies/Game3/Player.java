@@ -1,94 +1,93 @@
 package uk.co.marshmallow_zombies.Game3;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.FontMetrics;
 import java.awt.Graphics;
-import java.awt.Rectangle;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 
-import uk.co.marshmallow_zombies.rj2dgl.framework.Keyboard;
-import uk.co.marshmallow_zombies.rj2dgl.framework.Keys;
-import uk.co.marshmallow_zombies.tmxloader.Map;
-import uk.co.marshmallow_zombies.tmxloader.MapObject;
+import javax.imageio.ImageIO;
 
-public class Player {
+import uk.co.marshmallow_zombies.Game3.level.Level;
+import uk.co.marshmallow_zombies.rj2dgl.framework.Vector2;
+import uk.co.marshmallow_zombies.rj2dgl.physics.Rigidbody;
 
-	private Map map = null;
-	private Color color = Color.RED;
-	private int x = 0, y = 10 * 32;
-	private int speed = 4;
-	private String signtext = "";
-	private int signx, signy;
+/**
+ * Represents a player.
+ * 
+ * @author Oliver Davenport
+ */
+public class Player extends Rigidbody implements IDrawable, IUpdateable {
 
-	public Player(Map map) {
-		this.map = map;
-	}
+	private BufferedImage image = null; // Drawing image
+	private BufferedImage imageSet = null; // Full image
 
-	public void pollInput() {
-		color = Color.RED;
+	private Level level; // Parent level
+	private Vector2 oldPosition; // Old position, for collision stuff
 
-		if (Keyboard.isKeyDown(Keys.SPACE)) {
-			color = Color.BLUE;
-		}
-		if (Keyboard.isKeyDown(Keys.D)) {
-			x += speed;
-		}
-		if (Keyboard.isKeyDown(Keys.A)) {
-			x -= speed;
-		}
+	public Player(Level level) {
+		this.setMass(1f);
+		this.level = level;
 
-		if (Keyboard.isKeyDown(Keys.W)) {
-			y -= speed;
-		}
-		if (Keyboard.isKeyDown(Keys.S)) {
-			y += speed;
+		try {
+			imageSet = ImageIO.read(new File("res/charas/player.png"));
+			image = imageSet.getSubimage(32, 64, 32, 32);
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 
-	public void pollPosition() {
-		Rectangle rect = new Rectangle(x, y + 5, 32, 32);
+	@Override
+	public BufferedImage getImage() {
+		return image;
+	}
 
-		MapObject[] objects = map.getCollisionObject(rect);
-		signtext = "";
+	@Override
+	public void setImage(BufferedImage v) {
+		this.image = v;
+	}
 
-		for (MapObject object : objects) {
-			if (object == null) {
-				return;
+	@Override
+	public void tick(long delta) {
+		oldPosition = getPosition().clone();
+
+		// Physics!
+		doGravity();
+		doRigidbodyCollision(); // Collides with another object?
+		doBorderCollision(); // Collides with the map edge?
+	}
+
+	private void doRigidbodyCollision() {
+		// Get all rigidbodies and iterate through them
+		Rigidbody[] rigidbodies = level.getRigidbodies();
+		for (int i = 0; i < rigidbodies.length; i++) {
+			if (rigidbodies[i] == this)
+				// Skip this body. It's the player
+				continue;
+
+			// Check if we are colliding with one
+			if (collidesWith(rigidbodies[i])) {
+				// If we are, reset the position
+				setPosition(oldPosition);
 			}
-
-			if (object.getType().equals("sign")) {
-				signtext = object.getPropertyString("content");
-				signx = object.getX();
-				signy = object.getY() - 40;
-			}
 		}
 	}
 
-	public void draw(Graphics g) {
-		g.setColor(color);
-		g.fillRect(x, y, 32, 32);
-		
-		if(!signtext.isEmpty()) {
-			Font font = new Font("Arial", Font.PLAIN, 16);
-			Dimension size = measureFont(g, font, signtext);
+	private void doBorderCollision() {
+		if (getPosition().x >= Game3.SCREEN_WIDTH - level.getMap().getTileSize().getWidth()) {
+			// Set position
+			int x = Game3.SCREEN_WIDTH - (int) level.getMap().getTileSize().getWidth();
+			getPosition().x = x;
+		}
 
-			g.setColor(Color.WHITE);
-			g.fillRoundRect(signx - (int)size.getWidth() / 2 - 15, signy - (int)size.getHeight() / 2 - 15, (int)size.getWidth() + 35, (int)size.getHeight() + 15, 32, 32);
-			g.setColor(Color.BLACK);
-			g.drawRoundRect(signx - (int)size.getWidth() / 2 - 16, signy - (int)size.getHeight() / 2 - 16, (int)size.getWidth() + 37, (int)size.getHeight() + 17, 32, 32);
-			g.setFont(font);
-			g.drawString(signtext, signx - (int)size.getWidth() / 2, signy - (int)size.getHeight() / 4);
+		if (getPosition().x <= 0) {
+			// Set position
+			getPosition().x = 0;
 		}
 	}
 
-	private Dimension measureFont(Graphics g, Font font, String text) {
-		FontMetrics metrics = g.getFontMetrics(font);
-		int hgt = metrics.getHeight();
-		int adv = metrics.stringWidth(text);
-		Dimension size = new Dimension(adv + 2, hgt + 2);
-
-		return size;
+	@Override
+	public void draw(Graphics g, long delta) {
+		g.drawImage(image, (int) getPosition().x, (int) getPosition().y, null);
 	}
 
 };
